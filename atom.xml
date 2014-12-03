@@ -4,7 +4,7 @@
   <title><![CDATA[My Octopress Blog]]></title>
   <link href="http://argxento.github.io/atom.xml" rel="self"/>
   <link href="http://argxento.github.io/"/>
-  <updated>2014-12-03T22:05:37+09:00</updated>
+  <updated>2014-12-03T22:57:49+09:00</updated>
   <id>http://argxento.github.io/</id>
   <author>
     <name><![CDATA[Your Name]]></name>
@@ -12,5 +12,15 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Hello, World!]]></title>
+    <link href="http://argxento.github.io/blog/2014/12/03/hello/"/>
+    <updated>2014-12-03T22:18:10+09:00</updated>
+    <id>http://argxento.github.io/blog/2014/12/03/hello</id>
+    <content type="html"><![CDATA[<p>とりあえずgitとMarkdownでブログが書きたくて、Github PagesとOctopressで
+ブログを作ってみた。うまく行ったらはてなブログから移行する予定。</p>
+]]></content>
+  </entry>
   
 </feed>
