@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Posts on ArGxeLog</title>
+    <link>http://blog.agx.pw/post/</link>
+    <description>Recent content in Posts on ArGxeLog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>ja-jp</language>
+    <copyright>© 2015 ArGxento</copyright>
+    <lastBuildDate>Mon, 30 Nov 2015 02:27:54 +0900</lastBuildDate>
+    <atom:link href="http://blog.agx.pw/post/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>OctopressからHugoへ移行</title>
+      <link>http://blog.agx.pw/2015/11/30/migration_to_hugo/</link>
+      <pubDate>Mon, 30 Nov 2015 02:27:54 +0900</pubDate>
+      
+      <guid>http://blog.agx.pw/2015/11/30/migration_to_hugo/</guid>
+      <description>&lt;p&gt;Octopressのビルドの遅さ、ファイル構成の複雑さなどに幻滅して、Hugoに移行した。とりあえずこれでしばらく様子見。&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Avira Free AntivirusのCPU使用率が跳ね上がったまま下がらない問題</title>
+      <link>http://blog.agx.pw/2015/01/04/flash-made-avira-abnormal/</link>
+      <pubDate>Sun, 04 Jan 2015 08:59:59 +0900</pubDate>
+      
+      <guid>http://blog.agx.pw/2015/01/04/flash-made-avira-abnormal/</guid>
+      <description>&lt;p&gt;最近Avira Free AntivirusがCPUの1コアを占領し続ける
+問題が発生して困っていたので、原因を調べたところどうやら
+ChromeなどのFlashが原因でAviraが暴走しているらしい。
+ネットではReal-time Protectionを切るなどの対策が書かれていたが、さすがにそれはリスクが大きいので、Real-time Protectionの例外にChromeを入れることでとりあえず対処。リスクはあるものの、ネットに書かれている方法よりはマシかなとは思う。Chrome自体は比較的堅牢ではあるし。&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Hello, World!</title>
+      <link>http://blog.agx.pw/2014/12/03/hello/</link>
+      <pubDate>Wed, 03 Dec 2014 22:18:10 +0900</pubDate>
+      
+      <guid>http://blog.agx.pw/2014/12/03/hello/</guid>
+      <description>&lt;p&gt;とりあえずgitとMarkdownでブログが書きたくて、Github PagesとOctopressで
+ブログを作ってみた。うまく行ったらはてなブログから移行する予定。&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

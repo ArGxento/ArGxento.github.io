@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Huga on ArGxeLog</title>
+    <link>http://localhost:1313/tags/huga/</link>
+    <description>Recent content in Huga on ArGxeLog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>ja-jp</language>
+    <copyright>© 2015 ArGxento</copyright>
+    <lastBuildDate>Mon, 30 Nov 2015 01:51:59 +0900</lastBuildDate>
+    <atom:link href="http://localhost:1313/tags/huga/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>test</title>
+      <link>http://localhost:1313/2015/11/30/test/</link>
+      <pubDate>Mon, 30 Nov 2015 01:51:59 +0900</pubDate>
+      
+      <guid>http://localhost:1313/2015/11/30/test/</guid>
+      <description>
+
+&lt;h1 id=&#34;test:b128b7694e4de962e0088bcb1bcb254f&#34;&gt;test&lt;/h1&gt;
+
+&lt;h2 id=&#34;test-1:b128b7694e4de962e0088bcb1bcb254f&#34;&gt;test&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;hoge&lt;/li&gt;
+&lt;li&gt;huga&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

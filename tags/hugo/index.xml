@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Hugo on ArGxeLog</title>
+    <link>http://blog.agx.pw/tags/hugo/</link>
+    <description>Recent content in Hugo on ArGxeLog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>ja-jp</language>
+    <copyright>© 2015 ArGxento</copyright>
+    <lastBuildDate>Mon, 30 Nov 2015 02:27:54 +0900</lastBuildDate>
+    <atom:link href="http://blog.agx.pw/tags/hugo/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>OctopressからHugoへ移行</title>
+      <link>http://blog.agx.pw/2015/11/30/migration_to_hugo/</link>
+      <pubDate>Mon, 30 Nov 2015 02:27:54 +0900</pubDate>
+      
+      <guid>http://blog.agx.pw/2015/11/30/migration_to_hugo/</guid>
+      <description>&lt;p&gt;Octopressのビルドの遅さ、ファイル構成の複雑さなどに幻滅して、Hugoに移行した。とりあえずこれでしばらく様子見。&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>
