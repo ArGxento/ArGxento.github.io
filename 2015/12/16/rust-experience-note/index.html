@@ -1,0 +1,335 @@
+
+<!doctype html>
+<html lang="ja-jp">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
+  <title>Rust 入門もどき(というより体験記)</title>
+  <script src="http://blog.agx.pw//bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+  <link rel="import" href="http://blog.agx.pw//bower_components/iron-icons/iron-icons.html">
+  <link rel="import" href="http://blog.agx.pw//bower_components/paper-drawer-panel/paper-drawer-panel.html">
+  <link rel="import" href="http://blog.agx.pw//bower_components/paper-icon-button/paper-icon-button.html">
+  <link rel="import" href="http://blog.agx.pw//bower_components/paper-toolbar/paper-toolbar.html">
+  <link rel="import" href="http://blog.agx.pw//bower_components/paper-scroll-header-panel/paper-scroll-header-panel.html">
+  <link rel="import" href="http://blog.agx.pw//bower_components/paper-fab/paper-fab.html">
+  <link rel="import" href="http://blog.agx.pw//bower_components/paper-item/paper-item.html">
+  <link rel="import" href="http://blog.agx.pw//bower_components/paper-menu/paper-menu.html">
+  <link rel="import" href="http://blog.agx.pw//bower_components/iron-image/iron-image.html">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.6/styles/default.min.css">
+  <style is="custom-style">
+    body {
+      font-family: 'Roboto', sans-serif;
+    }
+    .nav {
+      border-right: 1px solid #ccc;
+    }
+    
+    paper-scroll-header-panel {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      background-color: var(--paper-grey-200, #eee);
+       
+      --paper-scroll-header-panel-full-header: {
+        background-image: url(http://blog.agx.pw//images/cover.png);
+      };
+       
+      --paper-scroll-header-panel-condensed-header: {
+        background-image: url(http://blog.agx.pw//images/cover.png);
+      };
+    }
+    
+    paper-toolbar {
+       
+      height: 256px;
+      background-color: transparent;
+    }
+    .profile{
+      width: 100%;
+      padding-bottom: 20px;
+    }
+    .photo{
+      margin: 20px;
+      display: inline-block;
+      height: 64px; width: 64px;
+      border-radius: 50%;
+    }
+    .article{
+      border: 1px solid #bebebe;
+      padding: 16px;
+      margin: 16px;
+      border-radius: 5px;
+      background-color: #fff;
+    }
+    .title{
+      font-size: 22px;
+      padding: 8px 0 16px;
+    }
+    .description{
+      font-size: 16px;
+      padding-bottom: 8px;
+    }
+    .author{
+      font-size: 16px;
+      padding-left: 20px;
+      color: white;
+    }
+    .design{
+      font-size: 14px;
+    }
+    .copyright{
+      font-size: 16px;
+    }
+    paper-menu a {
+      text-decoration: none;
+      color: #212121;
+    }
+  </style>
+
+</head>
+<body>
+  <paper-drawer-panel id="drawerPanel" responsive-width="1280px">
+    <div class="nav scroll" drawer>
+    
+      <iron-image class="profile" sizing="cover" src="http://blog.agx.pw//images/profile.png">
+    
+        
+          <iron-image class="photo" sizing="cover" src="http://blog.agx.pw//images/photo.png"></iron-image>
+        
+          <div class="author">ArGxento</div>
+      </iron-image>
+      <paper-menu>
+        <a href="http://blog.agx.pw/"><paper-item>
+          <iron-icon icon="home"></iron-icon>　<div class="flex">Home</div>
+          <iron-icon icon="chevron-right"></iron-icon>
+        </paper-item></a>
+        <a href="http://blog.agx.pw//categories/"><paper-item>
+          <iron-icon icon="drafts"></iron-icon>　<div class="flex">Categories</div>
+          <iron-icon icon="chevron-right"></iron-icon>
+        </paper-item></a>
+        <a href="http://blog.agx.pw//tags/"><paper-item>
+          <iron-icon icon="loyalty"></iron-icon>　<div class="flex">Tags</div>
+          <iron-icon icon="chevron-right"></iron-icon>
+        </paper-item></a>
+      </paper-menu>
+    </div>
+
+    <paper-scroll-header-panel main condenses header-height="256" condensed-header-height="64">
+
+      <paper-toolbar>
+
+        <paper-icon-button icon="menu" paper-drawer-toggle></paper-icon-button>
+        <div class="bottom title">ArGxeLog</div>
+        <div class="flex"></div>
+        
+        
+          <a href="https://twitter.com/ArGxento"><paper-icon-button src="http://blog.agx.pw//images/twitter-dreamstale71.png"></paper-icon-button></a>
+        
+        
+        
+        
+          <a href="https://github.com/ArGxento"><paper-icon-button src="http://blog.agx.pw//images/github2-dreamstale35.png"></paper-icon-button></a>
+        
+          <a href="http://blog.agx.pw//index.xml"><paper-icon-button src="http://blog.agx.pw//images/feed-dreamstale27.png"></paper-icon-button></a>
+      
+      </paper-toolbar>
+
+
+
+<div class="content">
+
+  <div class="article">
+    <div class="title">Rust 入門もどき(というより体験記)</div>
+    
+      <div class="categories">
+        
+          <a href="http://blog.agx.pw//categories/rust/">rust</a>
+        
+      </div>
+     
+    <div class="description">
+
+<p>※この記事は <a href="http://www.adventar.org/calendars/1211">coins Advent Calendar 2015</a> と <a href="http://www.adventar.org/calendars/1029">AmusementCreators Advent Calendar 2015</a> の19日目(多分)の記事<sup class="footnote-ref" id="fnref:f374261f8ed11b628682d76f07d866aa:Advent-Calender"><a rel="footnote" href="#fn:f374261f8ed11b628682d76f07d866aa:Advent-Calender">1</a></sup>です。</p>
+
+<p>大学の後輩たちがやっている Advent Calender に何か書きたいなーと思っていたら、
+何となくネタがあるような気がしてきたので書いてみます。
+とはいえ僕自身そんなにRustに書き慣れていないし、ドキュメントもそんなに読んでいないので、間違いがあったら優しく教えてください。</p>
+
+<p>Rust　という言語は<a href="https://doc.rust-lang.org/stable/reference.html#appendix-influences">様々な言語の影響を受けている</a>そうですが、個人的にはRustの設計思想は C++ と OCaml などの ML系言語 の影響がかなり強いという印象を持っています。従って、これら2つの言語の知識があればこの言語をより理解しやすいと思います。ただ、本記事はスタック領域やヒープ領域などの基礎単語さえ知っていれば、他の言語(coins の授業で使われる Java など)の知識のみでも読めるように書こうとは思っています。</p>
+
+<h2 id="環境構築と-hello-world:f374261f8ed11b628682d76f07d866aa">環境構築と Hello, World!</h2>
+
+<ol>
+<li>インストールするのが面倒なら、 <a href="http://melpon.org/wandbox/">Wandbox</a> でお試しができます。 Wandbox を使う方はこれで環境構築終了です。</li>
+
+<li><p>インストールするのが面倒でないなら、<a href="https://www.rust-lang.org/downloads.html">ダウンロードページ</a>から Rust のバイナリを落としてインストールしてください。Stable の他に Beta と Nightly　というチャンネルがありますが、少なくない数のライブラリが Beta や Nightly にしかない機能を使用しているので、最初に Nightly で書いてみて、動かないライブラリが出たら Beta や Stable に戻す、というやり方をおすすめします<sup class="footnote-ref" id="fnref:f374261f8ed11b628682d76f07d866aa:multirust-https"><a rel="footnote" href="#fn:f374261f8ed11b628682d76f07d866aa:multirust-https">2</a></sup>。このときついでに rustc のソースコード<sup class="footnote-ref" id="fnref:f374261f8ed11b628682d76f07d866aa:Source"><a rel="footnote" href="#fn:f374261f8ed11b628682d76f07d866aa:Source">3</a></sup>も落としておいてください。次にインストールする Racer が使います。</p></li>
+
+<li><p>シェル上で<code>cargo</code>コマンドを叩いてみて、正しくインストールされたことを確認したら、<a href="https://github.com/phildawes/racer">Racer</a> をインストールします。READMEを読んでその通りにやればすんなり入ります。こいつがあるとエディタ上で補完が効くようになってめっちゃ便利です。</p></li>
+
+<li><p>適当なディレクトリで <code>cargo new --bin helloworld</code> を走らせます。</p></li>
+
+<li><p>helloworld/src/main.rs がこれからいじるコードになるわけですが、中身を見ると何故か Hello, World! が書かれているので、 helloworld ディレクトリで <code>cargo run</code> を叩いて Hello, World! 終了です。</p></li>
+</ol>
+
+<h2 id="言語仕様メモ:f374261f8ed11b628682d76f07d866aa">言語仕様メモ</h2>
+
+<p>チュートリアルは本家のサイトに<a href="https://doc.rust-lang.org/nightly/book/">割合しっかりしたの</a>がありますし、<a href="https://doc.rust-lang.org/nightly/std/">ライブラリリファレンス</a>も充実していますので、ここでは言語の全般的な紹介は行わず、自分が実際につまづいた点、他人がつまづきそうな点を中心に、いくつかの Tips のようなものを書いておきたいと思います。</p>
+
+<h3 id="ownership-と-borrowing-lifetime:f374261f8ed11b628682d76f07d866aa">ownership と borrowing, lifetime</h3>
+
+<p>Rust には言語仕様としてガベージコレクション( GC )がないため、メモリ管理をプログラマの責任で行わなければなりません。とはいえ C 言語のような原始的なやり方ではなく、
+コンパイル時に潜在的なバグの原因を検出する、下に述べるような機構や概念を持っています。</p>
+
+<h4 id="ownership:f374261f8ed11b628682d76f07d866aa">ownership</h4>
+
+<p>ownership(所有権) は、変数が束縛(≒代入)されたリソース<sup class="footnote-ref" id="fnref:f374261f8ed11b628682d76f07d866aa:Vec"><a rel="footnote" href="#fn:f374261f8ed11b628682d76f07d866aa:Vec">4</a></sup>を消去する権利のことです。</p>
+
+<p>具体的には、あるリソースの所有権を持っている変数は、スコープ後端に達して寿命が尽きた際にそのリソースを解放します。
+ただし、所有権は一つのリソースに対しちょうど一つの変数しか持てない(リソースの解放操作を複数回やると困るので)ため、別の変数に代入する場合には所有権の移管が発生し、元々の変数はそのリソースを利用できなくなります<sup class="footnote-ref" id="fnref:f374261f8ed11b628682d76f07d866aa:borrowing"><a rel="footnote" href="#fn:f374261f8ed11b628682d76f07d866aa:borrowing">5</a></sup>。ただし、所有権を持っていない変数も所有権を借riりる(borrowing; 後述)ことでリソースを利用できるため、別の変数に代入できなくてもそれほど問題にはなりません。</p>
+
+<p>要するにどの変数がそのリソースの後始末を任されているか、という考え方です。また、数値などのヒープ領域に格納されない小さなデータでは、代入時に所有権の移管ではなくコピーが発生します<sup class="footnote-ref" id="fnref:f374261f8ed11b628682d76f07d866aa:Copy-trait-C-Jav"><a rel="footnote" href="#fn:f374261f8ed11b628682d76f07d866aa:Copy-trait-C-Jav">6</a></sup>。</p>
+
+<h4 id="borrowing:f374261f8ed11b628682d76f07d866aa">borrowing</h4>
+
+<p>あるリソースの所有権を持たない変数は、参照<sup class="footnote-ref" id="fnref:f374261f8ed11b628682d76f07d866aa:-"><a rel="footnote" href="#fn:f374261f8ed11b628682d76f07d866aa:-">7</a></sup>によってそのリソースにアクセスすることができます。
+参照によってリソースにアクセスする場合、型が先頭に <code>&amp;</code> がつく参照型に変わりますが、参照型と元の型を相互に変換するために <code>&amp;</code> や <code>*</code> といった演算子を使う必要が生じるだけで、実際他はそんなに変わりません。</p>
+
+<p>ただし、マルチスレッドでのデータ競合を避けるために、あるリソースへの <strong>書き換え可能な参照( <code>&amp;mut</code> )は同時に一つしか存在できない</strong> という制約があります。
+この辺が C++ での所有権や参照と大きく異なる点です。</p>
+
+<h4 id="lifetime:f374261f8ed11b628682d76f07d866aa">lifetime</h4>
+
+<p>Rust では、前述の所有権によって、リソースの寿命をコンパイル時に決定できるようになっています<sup class="footnote-ref" id="fnref:f374261f8ed11b628682d76f07d866aa:-"><a rel="footnote" href="#fn:f374261f8ed11b628682d76f07d866aa:-">8</a></sup>。
+そこで、その寿命の長さ(=所有権を持つ変数のスコープ)に名前をつけて陽に扱おうという考えが出てきます<sup class="footnote-ref" id="fnref:f374261f8ed11b628682d76f07d866aa:region-ML-Kit"><a rel="footnote" href="#fn:f374261f8ed11b628682d76f07d866aa:region-ML-Kit">9</a></sup>。これが lifetime というものですが、入門したてだと使う機会もないので、必要になったら使い方を覚える、という感じでいいんじゃないかと思います。</p>
+
+<h3 id="box-rc-cow-cell:f374261f8ed11b628682d76f07d866aa">Box, Rc, Cow, Cell</h3>
+
+<p>ここでは比較的よく使われ、また一見使い分けが難しいいくつかのコレクションやスマートポインタについて、自分なりの理解を書いておきます。</p>
+
+<h4 id="box:f374261f8ed11b628682d76f07d866aa">Box</h4>
+
+<p>Rust は C++ や C などと異なり、ヒープ領域にデータを置くための操作( Boxing )を言語機能ではなく、<code>Box</code> という名前で標準ライブラリの一部として提供しています。
+要するに C++ での <code>new</code>, C での <code>malloc</code> に当たるのが <code>Box::new</code>です。動的配列などのコンパイル時にサイズが分からないデータ構造や、二分木などの再帰したデータ構造、巨大な配列などに用いられます。
+他との使い分けとしては、所有権や参照の振る舞いは Rust の原則通りでいい、単純にヒープに置きたいリソースのために使うのがよいようです。</p>
+
+<p>ぶっちゃけあまりによく使うので、いちいち <code>Box::new</code> と書くのが面倒になってきます<sup class="footnote-ref" id="fnref:f374261f8ed11b628682d76f07d866aa:new-box"><a rel="footnote" href="#fn:f374261f8ed11b628682d76f07d866aa:new-box">10</a></sup>。</p>
+
+<h4 id="rc:f374261f8ed11b628682d76f07d866aa">Rc</h4>
+
+<p>Boxのようにデータをヒープ上に置くために使われますが、<code>Box</code> が C++ での <code>new</code> ならば、こちらは <code>shared_ptr</code> にあたり、<a href="https://ja.wikipedia.org/wiki/%E5%8F%82%E7%85%A7%E3%82%AB%E3%82%A6%E3%83%B3%E3%83%88">参照カウント</a>で所有権の管理を楽にします。<code>Box</code> との使い分けとしては、とにかく所有権の管理が面倒だったり、所有権をたらい回しにする必要があったり、寿命が不明確なリソースに用いるとよいようです。あるいは C++ の <code>shared_ptr</code> のように、どちらを使うか迷ったらとりあえず <code>Rc</code> を使えとかいわれる時代が来るのでしょうか……。ただし循環参照の検出はしていないので、リソース同士がお互いを参照し合っている場合などでは、弱参照を適切に使うなり注意が必要です。</p>
+
+<p>循環参照を避けられない場合、標準ライブラリではありませんが、ほぼ同じように使えるマーク＆スウィープ方式の <a href="https://github.com/Manishearth/rust-gc"><code>Gc</code></a> というライブラリもあるようです<sup class="footnote-ref" id="fnref:f374261f8ed11b628682d76f07d866aa:-"><a rel="footnote" href="#fn:f374261f8ed11b628682d76f07d866aa:-">11</a></sup>。また、標準ライブラリにはマルチスレッド向けに、アトミックに参照カウントを行う、 <a href="https://doc.rust-lang.org/nightly/alloc/arc/"><code>Arc</code></a> というスマートポインタも用意されています。</p>
+
+<h4 id="cow:f374261f8ed11b628682d76f07d866aa">Cow</h4>
+
+<p><code>Cow</code> は書き換えや所有権の取得が必要になるまでデータのコピーを遅延させる、<a href="https://ja.wikipedia.org/wiki/%E3%82%B3%E3%83%94%E3%83%BC%E3%82%AA%E3%83%B3%E3%83%A9%E3%82%A4%E3%83%88">コピーオンライト</a><sup class="footnote-ref" id="fnref:f374261f8ed11b628682d76f07d866aa:Cow-Clone-On-Wri"><a rel="footnote" href="#fn:f374261f8ed11b628682d76f07d866aa:Cow-Clone-On-Wri">12</a></sup> のためのスマートポインタです。</p>
+
+<p>データを書き換える可能性があるのでコピーがほしいが、書き換えずに済む可能性もある場合に、コピー時の無駄なコストを抑えるために使います。</p>
+
+<h4 id="cell:f374261f8ed11b628682d76f07d866aa">Cell</h4>
+
+<p><code>Cell</code> は <code>set</code> と <code>get</code> というメソッドを持っており、<code>&amp;mut</code>　ではなく通常の <code>&amp;</code> から内部のデータを書き換えることができます。
+つまり、通常は一つのリソースにつき同時に参照一つまでしか書き換えができない(<code>&amp;mut</code>は同時に一つしか存在できないので)のに対し、<code>Cell</code>ならば複数の参照から書き換えができるようになります。寿命が明確な一つのリソースを、複数の変数から書き換えたい場合に用いるのがよいようです。</p>
+
+<p>なお、<code>Cell</code> はスタック上に置かれる型専用であり、ヒープ上に置かれるデータの型は <code>RefCell</code> を使う必要があるようです。</p>
+
+<h2 id="外部ライブラリ:f374261f8ed11b628682d76f07d866aa">外部ライブラリ</h2>
+
+<p>Rust は外部ライブラリを <a href="https://crates.io/">Cargo</a> というサイトで集約的に管理しており、プロジェクトの設定ファイルに一行書くだけでライブラリを簡単に導入できます。
+この章ではそのサイトに登録されているライブラリの中から、使って便利だったものや面白そうなものを紹介したいと思います。</p>
+
+<h3 id="piston:f374261f8ed11b628682d76f07d866aa">Piston</h3>
+
+<p>せっかくゲーム製作サークル AmusementCreators の Advent Calendar なので、ゲーム製作に関することを書いておきたいと思います。</p>
+
+<p><a href="http://www.piston.rs/">Piston</a> は、 Rust で書かれた OpenGL ベースのマルチプラットフォームゲームエンジンです。
+現在も開発が盛んですが、 3D やサウンド、テキスト、 GUI 用のライブラリも付属するなど完成度自体は高く、十分実用に耐えうるレベルのようです。</p>
+
+<p>また、ここの開発コミュニティはとても野心的で、ゲームエンジン本体のみならず、<a href="https://github.com/PistonDevelopers/VisualRust">VisualStudio プラグイン</a>や強力な <a href="https://github.com/PistonDevelopers/meta">DSL パーサライブラリ</a>なんかも作っているので、
+その辺ものぞいてみると面白いかもしれません。</p>
+
+<h3 id="regex:f374261f8ed11b628682d76f07d866aa">regex</h3>
+
+<p><a href="https://doc.rust-lang.org/regex/regex/index.html">regex</a> は、 名前のごとく正規表現ライブラリです。
+何故か標準入りしていない<sup class="footnote-ref" id="fnref:f374261f8ed11b628682d76f07d866aa:GraphViz"><a rel="footnote" href="#fn:f374261f8ed11b628682d76f07d866aa:GraphViz">13</a></sup>正規表現ライブラリですが、このライブラリは機能も申し分ないですし、Rust のコアメンバーが開発しているので、早く標準に入ってほしいとは思います。</p>
+
+<h3 id="rust-peg:f374261f8ed11b628682d76f07d866aa">rust-peg</h3>
+
+<p><a href="https://github.com/kevinmehall/rust-peg">rust-peg</a> は <a href="https://ja.wikipedia.org/wiki/Parsing_Expression_Grammar">Parsing Expression Grammar (PEG)</a>という、新しくて分かりやすい形式文法を用いてパーサを記述できるライブラリです。
+PEG で記述できるパーサライブラリはいくつかあるのですが、いろいろ試した結果これが一番使いやすいような気がします。
+個人的に Rust は新しい言語を書くのにうってつけの言語だと思うので、 Rust を試したいけど何を書こうか迷ってるという方は、とりあえず言語を実装してみると Rust の魅力が理解できるのではないでしょうか。</p>
+
+<p>構文解析によく使われる yacc のポーティングとしては、 <a href="https://github.com/sivadeilra/racc">RACC</a> が割合いい感じだとは聞くのですが、ドキュメントがない上に公式に未完成だと書いてあるので、試していません……。</p>
+
+<h3 id="jvm-assembler:f374261f8ed11b628682d76f07d866aa">jvm-assembler</h3>
+
+<p>どうせ言語を組むなら、インタプリタもいいですが既存のアーキテクチャに向けてコンパイルしたいですよね。
+とりあえず<a href="https://twitter.com/ArGxento/status/676368876431523840">アンケート</a>を採ったら JVM に吐きたくなったので、いい感じのを探したら
+<a href="https://github.com/kenpratt/jvm-assembler">jvm-assembler</a> というのがあったので使ってみようと思います。
+<a href="http://jasmin.sourceforge.net/">Jasmin</a> を使うより手軽そうですし。吐いたブツが正しく動くかはまだ試していませんが……。</p>
+
+<h2 id="最後に:f374261f8ed11b628682d76f07d866aa">最後に</h2>
+
+<p>最初は型システムやマクロ、 derive attribute あたりの面白いところも書こうと思っていたんですが、こればっかり書いていると卒論に全く手がつかないし、
+なによりこれ以上デタラメを書いてると怖い人からマサカリが飛んできそうなので、この辺で筆を置きたいと思います。</p>
+
+<p>いろいろ書いてきましたが、パターンマッチと代数的データ型と型クラスがあって手続き型が楽に書けて、C++ 似のメモリモデルを持っているというだけでとても面白い言語だと思うので、皆さんも書いてみてください。</p>
+<div class="footnotes">
+
+<hr />
+
+<ol>
+<li id="fn:f374261f8ed11b628682d76f07d866aa:Advent-Calender">ふたつの Advent Calender に同時に投稿するのもアリといわれたので、ちょっとせこいようですが…… <a class="footnote-return" href="#fnref:f374261f8ed11b628682d76f07d866aa:Advent-Calender"><sup>[return]</sup></a></li>
+<li id="fn:f374261f8ed11b628682d76f07d866aa:multirust-https">あるいは <a href="https://github.com/brson/multirust">multirust</a> を導入するのも手かもしれません <a class="footnote-return" href="#fnref:f374261f8ed11b628682d76f07d866aa:multirust-https"><sup>[return]</sup></a></li>
+<li id="fn:f374261f8ed11b628682d76f07d866aa:Source">ダウンロードページ右側の Source ボタン <a class="footnote-return" href="#fnref:f374261f8ed11b628682d76f07d866aa:Source"><sup>[return]</sup></a></li>
+<li id="fn:f374261f8ed11b628682d76f07d866aa:Vec">ここでは、 <code>Vec</code> などのヒープ領域に置かれたデータ <a class="footnote-return" href="#fnref:f374261f8ed11b628682d76f07d866aa:Vec"><sup>[return]</sup></a></li>
+<li id="fn:f374261f8ed11b628682d76f07d866aa:borrowing">borrowing があるから、所有権を渡した後でも参照で見るくらいいいじゃないかと思いがちですが、所有と参照だと型が違うので…… <a class="footnote-return" href="#fnref:f374261f8ed11b628682d76f07d866aa:borrowing"><sup>[return]</sup></a></li>
+<li id="fn:f374261f8ed11b628682d76f07d866aa:Copy-trait-C-Jav">厳密には <code>Copy</code> trait によって振る舞いが決定されます。この辺は C++ や Java よりも融通が利いていていいと思います <a class="footnote-return" href="#fnref:f374261f8ed11b628682d76f07d866aa:Copy-trait-C-Jav"><sup>[return]</sup></a></li>
+<li id="fn:f374261f8ed11b628682d76f07d866aa:-">あるリソースの置かれている <strong>場所</strong> を記憶することで、そのリソースにアクセスする方法 <a class="footnote-return" href="#fnref:f374261f8ed11b628682d76f07d866aa:-"><sup>[return]</sup></a></li>
+<li id="fn:f374261f8ed11b628682d76f07d866aa:-">参照カウントなどで動的にすることもできます <a class="footnote-return" href="#fnref:f374261f8ed11b628682d76f07d866aa:-"><sup>[return]</sup></a></li>
+<li id="fn:f374261f8ed11b628682d76f07d866aa:region-ML-Kit">region という考え方で、ML Kit などの言語で寿命をなるべく静的に決定し、実行速度を上げるために使われているそうです <a class="footnote-return" href="#fnref:f374261f8ed11b628682d76f07d866aa:region-ML-Kit"><sup>[return]</sup></a></li>
+<li id="fn:f374261f8ed11b628682d76f07d866aa:new-box"><code>new</code> 並みに簡単に書ける、 <code>box</code> キーワードが検討されてはいるみたいですが…… <a class="footnote-return" href="#fnref:f374261f8ed11b628682d76f07d866aa:new-box"><sup>[return]</sup></a></li>
+<li id="fn:f374261f8ed11b628682d76f07d866aa:-">ただし未完成な上に更新頻度が低いようですが…… <a class="footnote-return" href="#fnref:f374261f8ed11b628682d76f07d866aa:-"><sup>[return]</sup></a></li>
+<li id="fn:f374261f8ed11b628682d76f07d866aa:Cow-Clone-On-Wri">ただし <code>Cow</code> 自体は Clone-On-Write の略らしいです <a class="footnote-return" href="#fnref:f374261f8ed11b628682d76f07d866aa:Cow-Clone-On-Wri"><sup>[return]</sup></a></li>
+<li id="fn:f374261f8ed11b628682d76f07d866aa:GraphViz">少し前までは GraphViz 用のライブラリすらはいっていたのに…… <a class="footnote-return" href="#fnref:f374261f8ed11b628682d76f07d866aa:GraphViz"><sup>[return]</sup></a></li>
+</ol>
+</div>
+</div>
+    <div class="tags">
+      16 Dec 2015
+      
+        
+          <a href="http://blog.agx.pw//tags/rust/">#rust</a>
+        
+       
+    </div>
+    
+  </div>
+
+</div>
+
+<paper-item>
+  
+    <paper-fab disabled icon="chevron-left"></paper-fab>
+  
+    <div class="flex"></div>
+  
+    <a href="http://blog.agx.pw/2015/11/30/migration_to_hugo/"><paper-fab icon="chevron-right"></paper-fab></a>
+  
+</paper-item>
+
+      <paper-item>
+        <div class="copyright">© 2015 ArGxento</div>
+        <div class="flex"></div>
+        <div class="design">Design <a href="http://pdevty.github.io/blog/">pdevty</a></div>
+      </paper-item>
+    </paper-scroll-header-panel>
+  </paper-drawer-panel>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.6/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script>
+  
+</body>
+</html>

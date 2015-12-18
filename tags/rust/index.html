@@ -1,12 +1,11 @@
 
-
 <!doctype html>
 <html lang="ja-jp">
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
   <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
-  <title>Tags</title>
+  <title>Rust</title>
   <script src="http://blog.agx.pw//bower_components/webcomponentsjs/webcomponents-lite.js"></script>
   <link rel="import" href="http://blog.agx.pw//bower_components/iron-icons/iron-icons.html">
   <link rel="import" href="http://blog.agx.pw//bower_components/paper-drawer-panel/paper-drawer-panel.html">
@@ -140,14 +139,43 @@
 
 
 
+<div class="content">
 
-<paper-menu>
+
+  <div class="article">
+    <div class="title"><a href="http://blog.agx.pw/2015/12/16/rust-experience-note/">Rust 入門もどき(というより体験記)</a></div>
+    
+      <div class="categories">
+        
+          <a href="http://blog.agx.pw//categories/rust/">rust</a>
+        
+      </div>
+     
+    <div class="description">※この記事は coins Advent Calendar 2015 と AmusementCreators Advent Calendar 2015 の19日目(多分)の記事1です。 大学の後輩たちがやっている Advent Calender に何か書きたいなーと思っていたら、 何となくネタがあるような気がしてきたので書いてみます。 とはいえ僕自身そんなにRustに書き慣れていないし、ドキュメントもそんなに読んでいないので、間違いがあったら優しく教えてください。 Rust という言語は様々な言語の影響を受けているそうですが、個人的にはRustの設計思想は C++ と OCaml などの ML系言語 の影響がかなり強いという印象を持っています。従って、これら2つの言語の知識があればこの言語をより理解しやすいと思います。ただ、本記事はスタック領域やヒープ領域などの基礎単語さえ知っていれば、他の言語(coins の授業で使われる Java など)の知識のみでも読めるように書こうとは思っています。 環境構築と Hello, World! インストールするのが面倒なら、 Wandbox でお試しができます。 Wandbox を使う方はこれで環境構築終了です。 インストールするのが面倒でないなら、ダウンロードページから Rust のバイナリを落としてインストールしてください。Stable の他に Beta と Nightly というチャンネルがありますが、少なくない数のライブラリが Beta や Nightly にしかない機能を使用しているので、最初に Nightly で書いてみて、動かないライブラリが出たら Beta や Stable に戻す、というやり方をおすすめします2。このときついでに rustc のソースコード3も落としておいてください。次にインストールする Racer が使います。 シェル上でcargoコマンドを叩いてみて、正しくインストールされたことを確認したら、Racer をインストールします。READMEを読んでその通りにやればすんなり入ります。こいつがあるとエディタ上で補完が効くようになってめっちゃ便利です。 適当なディレクトリで cargo new --bin helloworld を走らせます。 helloworld/src/main.rs がこれからいじるコードになるわけですが、中身を見ると何故か Hello, World! が書かれているので、 helloworld ディレクトリで cargo run を叩いて Hello, World!</div>
+    <div class="tags">
+      16 Dec 2015
+      
+        
+          <a href="http://blog.agx.pw//tags/rust/">#rust</a>
+        
+       
+    </div>
+  </div>
+
+
+</div>
+
+
+<paper-item>
   
-    <a href="http://blog.agx.pw//tags/hugo"><paper-item><iron-icon icon="loyalty"></iron-icon>　<div class="flex">hugo</div> 1</paper-item></a>
+    <paper-fab disabled icon="chevron-left"></paper-fab>
   
-    <a href="http://blog.agx.pw//tags/rust"><paper-item><iron-icon icon="loyalty"></iron-icon>　<div class="flex">rust</div> 1</paper-item></a>
+    <div class="flex"></div>
   
-</paper-menu>
+    <paper-fab disabled icon="chevron-right"></paper-fab>
+  
+</paper-item>
+
 
       <paper-item>
         <div class="copyright">© 2015 ArGxento</div>
