@@ -6,9 +6,11 @@
     <description>Recent content in Rust on ArGxeLog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    <copyright>© 2015 ArGxento</copyright>
+    <copyright>© 2018 ArGxento</copyright>
     <lastBuildDate>Wed, 16 Dec 2015 22:09:51 +0900</lastBuildDate>
-    <atom:link href="http://blog.agx.pw/categories/rust/index.xml" rel="self" type="application/rss+xml" />
+    
+	<atom:link href="http://blog.agx.pw/categories/rust/index.xml" rel="self" type="application/rss+xml" />
+    
     
     <item>
       <title>Rust 入門もどき(というより体験記)</title>
@@ -16,154 +18,7 @@
       <pubDate>Wed, 16 Dec 2015 22:09:51 +0900</pubDate>
       
       <guid>http://blog.agx.pw/2015/12/16/rust-experience-note/</guid>
-      <description>
-
-&lt;p&gt;※この記事は &lt;a href=&#34;http://www.adventar.org/calendars/1211&#34;&gt;coins Advent Calendar 2015&lt;/a&gt; と &lt;a href=&#34;http://www.adventar.org/calendars/1029&#34;&gt;AmusementCreators Advent Calendar 2015&lt;/a&gt; の19日目(多分)の記事&lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:f374261f8ed11b628682d76f07d866aa:Advent-Calender&#34;&gt;&lt;a rel=&#34;footnote&#34; href=&#34;#fn:f374261f8ed11b628682d76f07d866aa:Advent-Calender&#34;&gt;1&lt;/a&gt;&lt;/sup&gt;です。&lt;/p&gt;
-
-&lt;p&gt;大学の後輩たちがやっている Advent Calender に何か書きたいなーと思っていたら、
-何となくネタがあるような気がしてきたので書いてみます。
-とはいえ僕自身そんなにRustに書き慣れていないし、ドキュメントもそんなに読んでいないので、間違いがあったら優しく教えてください。&lt;/p&gt;
-
-&lt;p&gt;Rust　という言語は&lt;a href=&#34;https://doc.rust-lang.org/stable/reference.html#appendix-influences&#34;&gt;様々な言語の影響を受けている&lt;/a&gt;そうですが、個人的にはRustの設計思想は C++ と OCaml などの ML系言語 の影響がかなり強いという印象を持っています。従って、これら2つの言語の知識があればこの言語をより理解しやすいと思います。ただ、本記事はスタック領域やヒープ領域などの基礎単語さえ知っていれば、他の言語(coins の授業で使われる Java など)の知識のみでも読めるように書こうとは思っています。&lt;/p&gt;
-
-&lt;h2 id=&#34;環境構築と-hello-world:f374261f8ed11b628682d76f07d866aa&#34;&gt;環境構築と Hello, World!&lt;/h2&gt;
-
-&lt;ol&gt;
-&lt;li&gt;インストールするのが面倒なら、 &lt;a href=&#34;http://melpon.org/wandbox/&#34;&gt;Wandbox&lt;/a&gt; でお試しができます。 Wandbox を使う方はこれで環境構築終了です。&lt;/li&gt;
-
-&lt;li&gt;&lt;p&gt;インストールするのが面倒でないなら、&lt;a href=&#34;https://www.rust-lang.org/downloads.html&#34;&gt;ダウンロードページ&lt;/a&gt;から Rust のバイナリを落としてインストールしてください。Stable の他に Beta と Nightly　というチャンネルがありますが、少なくない数のライブラリが Beta や Nightly にしかない機能を使用しているので、最初に Nightly で書いてみて、動かないライブラリが出たら Beta や Stable に戻す、というやり方をおすすめします&lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:f374261f8ed11b628682d76f07d866aa:multirust-https&#34;&gt;&lt;a rel=&#34;footnote&#34; href=&#34;#fn:f374261f8ed11b628682d76f07d866aa:multirust-https&#34;&gt;2&lt;/a&gt;&lt;/sup&gt;。このときついでに rustc のソースコード&lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:f374261f8ed11b628682d76f07d866aa:Source&#34;&gt;&lt;a rel=&#34;footnote&#34; href=&#34;#fn:f374261f8ed11b628682d76f07d866aa:Source&#34;&gt;3&lt;/a&gt;&lt;/sup&gt;も落としておいてください。次にインストールする Racer が使います。&lt;/p&gt;&lt;/li&gt;
-
-&lt;li&gt;&lt;p&gt;シェル上で&lt;code&gt;cargo&lt;/code&gt;コマンドを叩いてみて、正しくインストールされたことを確認したら、&lt;a href=&#34;https://github.com/phildawes/racer&#34;&gt;Racer&lt;/a&gt; をインストールします。READMEを読んでその通りにやればすんなり入ります。こいつがあるとエディタ上で補完が効くようになってめっちゃ便利です。&lt;/p&gt;&lt;/li&gt;
-
-&lt;li&gt;&lt;p&gt;適当なディレクトリで &lt;code&gt;cargo new --bin helloworld&lt;/code&gt; を走らせます。&lt;/p&gt;&lt;/li&gt;
-
-&lt;li&gt;&lt;p&gt;helloworld/src/main.rs がこれからいじるコードになるわけですが、中身を見ると何故か Hello, World! が書かれているので、 helloworld ディレクトリで &lt;code&gt;cargo run&lt;/code&gt; を叩いて Hello, World! 終了です。&lt;/p&gt;&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;h2 id=&#34;言語仕様メモ:f374261f8ed11b628682d76f07d866aa&#34;&gt;言語仕様メモ&lt;/h2&gt;
-
-&lt;p&gt;チュートリアルは本家のサイトに&lt;a href=&#34;https://doc.rust-lang.org/nightly/book/&#34;&gt;割合しっかりしたの&lt;/a&gt;がありますし、&lt;a href=&#34;https://doc.rust-lang.org/nightly/std/&#34;&gt;ライブラリリファレンス&lt;/a&gt;も充実していますので、ここでは言語の全般的な紹介は行わず、自分が実際につまづいた点、他人がつまづきそうな点を中心に、いくつかの Tips のようなものを書いておきたいと思います。&lt;/p&gt;
-
-&lt;h3 id=&#34;ownership-と-borrowing-lifetime:f374261f8ed11b628682d76f07d866aa&#34;&gt;ownership と borrowing, lifetime&lt;/h3&gt;
-
-&lt;p&gt;Rust には言語仕様としてガベージコレクション( GC )がないため、メモリ管理をプログラマの責任で行わなければなりません。とはいえ C 言語のような原始的なやり方ではなく、
-コンパイル時に潜在的なバグの原因を検出する、下に述べるような機構や概念を持っています。&lt;/p&gt;
-
-&lt;h4 id=&#34;ownership:f374261f8ed11b628682d76f07d866aa&#34;&gt;ownership&lt;/h4&gt;
-
-&lt;p&gt;ownership(所有権) は、変数が束縛(≒代入)されたリソース&lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:f374261f8ed11b628682d76f07d866aa:Vec&#34;&gt;&lt;a rel=&#34;footnote&#34; href=&#34;#fn:f374261f8ed11b628682d76f07d866aa:Vec&#34;&gt;4&lt;/a&gt;&lt;/sup&gt;を消去する権利のことです。&lt;/p&gt;
-
-&lt;p&gt;具体的には、あるリソースの所有権を持っている変数は、スコープ後端に達して寿命が尽きた際にそのリソースを解放します。
-ただし、所有権は一つのリソースに対しちょうど一つの変数しか持てない(リソースの解放操作を複数回やると困るので)ため、別の変数に代入する場合には所有権の移管が発生し、元々の変数はそのリソースを利用できなくなります&lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:f374261f8ed11b628682d76f07d866aa:borrowing&#34;&gt;&lt;a rel=&#34;footnote&#34; href=&#34;#fn:f374261f8ed11b628682d76f07d866aa:borrowing&#34;&gt;5&lt;/a&gt;&lt;/sup&gt;。ただし、所有権を持っていない変数も所有権を借riりる(borrowing; 後述)ことでリソースを利用できるため、別の変数に代入できなくてもそれほど問題にはなりません。&lt;/p&gt;
-
-&lt;p&gt;要するにどの変数がそのリソースの後始末を任されているか、という考え方です。また、数値などのヒープ領域に格納されない小さなデータでは、代入時に所有権の移管ではなくコピーが発生します&lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:f374261f8ed11b628682d76f07d866aa:Copy-trait-C-Jav&#34;&gt;&lt;a rel=&#34;footnote&#34; href=&#34;#fn:f374261f8ed11b628682d76f07d866aa:Copy-trait-C-Jav&#34;&gt;6&lt;/a&gt;&lt;/sup&gt;。&lt;/p&gt;
-
-&lt;h4 id=&#34;borrowing:f374261f8ed11b628682d76f07d866aa&#34;&gt;borrowing&lt;/h4&gt;
-
-&lt;p&gt;あるリソースの所有権を持たない変数は、参照&lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:f374261f8ed11b628682d76f07d866aa:-&#34;&gt;&lt;a rel=&#34;footnote&#34; href=&#34;#fn:f374261f8ed11b628682d76f07d866aa:-&#34;&gt;7&lt;/a&gt;&lt;/sup&gt;によってそのリソースにアクセスすることができます。
-参照によってリソースにアクセスする場合、型が先頭に &lt;code&gt;&amp;amp;&lt;/code&gt; がつく参照型に変わりますが、参照型と元の型を相互に変換するために &lt;code&gt;&amp;amp;&lt;/code&gt; や &lt;code&gt;*&lt;/code&gt; といった演算子を使う必要が生じるだけで、実際他はそんなに変わりません。&lt;/p&gt;
-
-&lt;p&gt;ただし、マルチスレッドでのデータ競合を避けるために、あるリソースへの &lt;strong&gt;書き換え可能な参照( &lt;code&gt;&amp;amp;mut&lt;/code&gt; )は同時に一つしか存在できない&lt;/strong&gt; という制約があります。
-この辺が C++ での所有権や参照と大きく異なる点です。&lt;/p&gt;
-
-&lt;h4 id=&#34;lifetime:f374261f8ed11b628682d76f07d866aa&#34;&gt;lifetime&lt;/h4&gt;
-
-&lt;p&gt;Rust では、前述の所有権によって、リソースの寿命をコンパイル時に決定できるようになっています&lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:f374261f8ed11b628682d76f07d866aa:-&#34;&gt;&lt;a rel=&#34;footnote&#34; href=&#34;#fn:f374261f8ed11b628682d76f07d866aa:-&#34;&gt;8&lt;/a&gt;&lt;/sup&gt;。
-そこで、その寿命の長さ(=所有権を持つ変数のスコープ)に名前をつけて陽に扱おうという考えが出てきます&lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:f374261f8ed11b628682d76f07d866aa:region-ML-Kit&#34;&gt;&lt;a rel=&#34;footnote&#34; href=&#34;#fn:f374261f8ed11b628682d76f07d866aa:region-ML-Kit&#34;&gt;9&lt;/a&gt;&lt;/sup&gt;。これが lifetime というものですが、入門したてだと使う機会もないので、必要になったら使い方を覚える、という感じでいいんじゃないかと思います。&lt;/p&gt;
-
-&lt;h3 id=&#34;box-rc-cow-cell:f374261f8ed11b628682d76f07d866aa&#34;&gt;Box, Rc, Cow, Cell&lt;/h3&gt;
-
-&lt;p&gt;ここでは比較的よく使われ、また一見使い分けが難しいいくつかのコレクションやスマートポインタについて、自分なりの理解を書いておきます。&lt;/p&gt;
-
-&lt;h4 id=&#34;box:f374261f8ed11b628682d76f07d866aa&#34;&gt;Box&lt;/h4&gt;
-
-&lt;p&gt;Rust は C++ や C などと異なり、ヒープ領域にデータを置くための操作( Boxing )を言語機能ではなく、&lt;code&gt;Box&lt;/code&gt; という名前で標準ライブラリの一部として提供しています。
-要するに C++ での &lt;code&gt;new&lt;/code&gt;, C での &lt;code&gt;malloc&lt;/code&gt; に当たるのが &lt;code&gt;Box::new&lt;/code&gt;です。動的配列などのコンパイル時にサイズが分からないデータ構造や、二分木などの再帰したデータ構造、巨大な配列などに用いられます。
-他との使い分けとしては、所有権や参照の振る舞いは Rust の原則通りでいい、単純にヒープに置きたいリソースのために使うのがよいようです。&lt;/p&gt;
-
-&lt;p&gt;ぶっちゃけあまりによく使うので、いちいち &lt;code&gt;Box::new&lt;/code&gt; と書くのが面倒になってきます&lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:f374261f8ed11b628682d76f07d866aa:new-box&#34;&gt;&lt;a rel=&#34;footnote&#34; href=&#34;#fn:f374261f8ed11b628682d76f07d866aa:new-box&#34;&gt;10&lt;/a&gt;&lt;/sup&gt;。&lt;/p&gt;
-
-&lt;h4 id=&#34;rc:f374261f8ed11b628682d76f07d866aa&#34;&gt;Rc&lt;/h4&gt;
-
-&lt;p&gt;Boxのようにデータをヒープ上に置くために使われますが、&lt;code&gt;Box&lt;/code&gt; が C++ での &lt;code&gt;new&lt;/code&gt; ならば、こちらは &lt;code&gt;shared_ptr&lt;/code&gt; にあたり、&lt;a href=&#34;https://ja.wikipedia.org/wiki/%E5%8F%82%E7%85%A7%E3%82%AB%E3%82%A6%E3%83%B3%E3%83%88&#34;&gt;参照カウント&lt;/a&gt;で所有権の管理を楽にします。&lt;code&gt;Box&lt;/code&gt; との使い分けとしては、とにかく所有権の管理が面倒だったり、所有権をたらい回しにする必要があったり、寿命が不明確なリソースに用いるとよいようです。あるいは C++ の &lt;code&gt;shared_ptr&lt;/code&gt; のように、どちらを使うか迷ったらとりあえず &lt;code&gt;Rc&lt;/code&gt; を使えとかいわれる時代が来るのでしょうか……。ただし循環参照の検出はしていないので、リソース同士がお互いを参照し合っている場合などでは、弱参照を適切に使うなり注意が必要です。&lt;/p&gt;
-
-&lt;p&gt;循環参照を避けられない場合、標準ライブラリではありませんが、ほぼ同じように使えるマーク＆スウィープ方式の &lt;a href=&#34;https://github.com/Manishearth/rust-gc&#34;&gt;&lt;code&gt;Gc&lt;/code&gt;&lt;/a&gt; というライブラリもあるようです&lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:f374261f8ed11b628682d76f07d866aa:-&#34;&gt;&lt;a rel=&#34;footnote&#34; href=&#34;#fn:f374261f8ed11b628682d76f07d866aa:-&#34;&gt;11&lt;/a&gt;&lt;/sup&gt;。また、標準ライブラリにはマルチスレッド向けに、アトミックに参照カウントを行う、 &lt;a href=&#34;https://doc.rust-lang.org/nightly/alloc/arc/&#34;&gt;&lt;code&gt;Arc&lt;/code&gt;&lt;/a&gt; というスマートポインタも用意されています。&lt;/p&gt;
-
-&lt;h4 id=&#34;cow:f374261f8ed11b628682d76f07d866aa&#34;&gt;Cow&lt;/h4&gt;
-
-&lt;p&gt;&lt;code&gt;Cow&lt;/code&gt; は書き換えや所有権の取得が必要になるまでデータのコピーを遅延させる、&lt;a href=&#34;https://ja.wikipedia.org/wiki/%E3%82%B3%E3%83%94%E3%83%BC%E3%82%AA%E3%83%B3%E3%83%A9%E3%82%A4%E3%83%88&#34;&gt;コピーオンライト&lt;/a&gt;&lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:f374261f8ed11b628682d76f07d866aa:Cow-Clone-On-Wri&#34;&gt;&lt;a rel=&#34;footnote&#34; href=&#34;#fn:f374261f8ed11b628682d76f07d866aa:Cow-Clone-On-Wri&#34;&gt;12&lt;/a&gt;&lt;/sup&gt; のためのスマートポインタです。&lt;/p&gt;
-
-&lt;p&gt;データを書き換える可能性があるのでコピーがほしいが、書き換えずに済む可能性もある場合に、コピー時の無駄なコストを抑えるために使います。&lt;/p&gt;
-
-&lt;h4 id=&#34;cell:f374261f8ed11b628682d76f07d866aa&#34;&gt;Cell&lt;/h4&gt;
-
-&lt;p&gt;&lt;code&gt;Cell&lt;/code&gt; は &lt;code&gt;set&lt;/code&gt; と &lt;code&gt;get&lt;/code&gt; というメソッドを持っており、&lt;code&gt;&amp;amp;mut&lt;/code&gt;　ではなく通常の &lt;code&gt;&amp;amp;&lt;/code&gt; から内部のデータを書き換えることができます。
-つまり、通常は一つのリソースにつき同時に参照一つまでしか書き換えができない(&lt;code&gt;&amp;amp;mut&lt;/code&gt;は同時に一つしか存在できないので)のに対し、&lt;code&gt;Cell&lt;/code&gt;ならば複数の参照から書き換えができるようになります。寿命が明確な一つのリソースを、複数の変数から書き換えたい場合に用いるのがよいようです。&lt;/p&gt;
-
-&lt;p&gt;なお、&lt;code&gt;Cell&lt;/code&gt; はスタック上に置かれる型専用であり、ヒープ上に置かれるデータの型は &lt;code&gt;RefCell&lt;/code&gt; を使う必要があるようです。&lt;/p&gt;
-
-&lt;h2 id=&#34;外部ライブラリ:f374261f8ed11b628682d76f07d866aa&#34;&gt;外部ライブラリ&lt;/h2&gt;
-
-&lt;p&gt;Rust は外部ライブラリを &lt;a href=&#34;https://crates.io/&#34;&gt;Cargo&lt;/a&gt; というサイトで集約的に管理しており、プロジェクトの設定ファイルに一行書くだけでライブラリを簡単に導入できます。
-この章ではそのサイトに登録されているライブラリの中から、使って便利だったものや面白そうなものを紹介したいと思います。&lt;/p&gt;
-
-&lt;h3 id=&#34;piston:f374261f8ed11b628682d76f07d866aa&#34;&gt;Piston&lt;/h3&gt;
-
-&lt;p&gt;せっかくゲーム製作サークル AmusementCreators の Advent Calendar なので、ゲーム製作に関することを書いておきたいと思います。&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&#34;http://www.piston.rs/&#34;&gt;Piston&lt;/a&gt; は、 Rust で書かれた OpenGL ベースのマルチプラットフォームゲームエンジンです。
-現在も開発が盛んですが、 3D やサウンド、テキスト、 GUI 用のライブラリも付属するなど完成度自体は高く、十分実用に耐えうるレベルのようです。&lt;/p&gt;
-
-&lt;p&gt;また、ここの開発コミュニティはとても野心的で、ゲームエンジン本体のみならず、&lt;a href=&#34;https://github.com/PistonDevelopers/VisualRust&#34;&gt;VisualStudio プラグイン&lt;/a&gt;や強力な &lt;a href=&#34;https://github.com/PistonDevelopers/meta&#34;&gt;DSL パーサライブラリ&lt;/a&gt;なんかも作っているので、
-その辺ものぞいてみると面白いかもしれません。&lt;/p&gt;
-
-&lt;h3 id=&#34;regex:f374261f8ed11b628682d76f07d866aa&#34;&gt;regex&lt;/h3&gt;
-
-&lt;p&gt;&lt;a href=&#34;https://doc.rust-lang.org/regex/regex/index.html&#34;&gt;regex&lt;/a&gt; は、 名前のごとく正規表現ライブラリです。
-何故か標準入りしていない&lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:f374261f8ed11b628682d76f07d866aa:GraphViz&#34;&gt;&lt;a rel=&#34;footnote&#34; href=&#34;#fn:f374261f8ed11b628682d76f07d866aa:GraphViz&#34;&gt;13&lt;/a&gt;&lt;/sup&gt;正規表現ライブラリですが、このライブラリは機能も申し分ないですし、Rust のコアメンバーが開発しているので、早く標準に入ってほしいとは思います。&lt;/p&gt;
-
-&lt;h3 id=&#34;rust-peg:f374261f8ed11b628682d76f07d866aa&#34;&gt;rust-peg&lt;/h3&gt;
-
-&lt;p&gt;&lt;a href=&#34;https://github.com/kevinmehall/rust-peg&#34;&gt;rust-peg&lt;/a&gt; は &lt;a href=&#34;https://ja.wikipedia.org/wiki/Parsing_Expression_Grammar&#34;&gt;Parsing Expression Grammar (PEG)&lt;/a&gt;という、新しくて分かりやすい形式文法を用いてパーサを記述できるライブラリです。
-PEG で記述できるパーサライブラリはいくつかあるのですが、いろいろ試した結果これが一番使いやすいような気がします。
-個人的に Rust は新しい言語を書くのにうってつけの言語だと思うので、 Rust を試したいけど何を書こうか迷ってるという方は、とりあえず言語を実装してみると Rust の魅力が理解できるのではないでしょうか。&lt;/p&gt;
-
-&lt;p&gt;構文解析によく使われる yacc のポーティングとしては、 &lt;a href=&#34;https://github.com/sivadeilra/racc&#34;&gt;RACC&lt;/a&gt; が割合いい感じだとは聞くのですが、ドキュメントがない上に公式に未完成だと書いてあるので、試していません……。&lt;/p&gt;
-
-&lt;h3 id=&#34;jvm-assembler:f374261f8ed11b628682d76f07d866aa&#34;&gt;jvm-assembler&lt;/h3&gt;
-
-&lt;p&gt;どうせ言語を組むなら、インタプリタもいいですが既存のアーキテクチャに向けてコンパイルしたいですよね。
-とりあえず&lt;a href=&#34;https://twitter.com/ArGxento/status/676368876431523840&#34;&gt;アンケート&lt;/a&gt;を採ったら JVM に吐きたくなったので、いい感じのを探したら
-&lt;a href=&#34;https://github.com/kenpratt/jvm-assembler&#34;&gt;jvm-assembler&lt;/a&gt; というのがあったので使ってみようと思います。
-&lt;a href=&#34;http://jasmin.sourceforge.net/&#34;&gt;Jasmin&lt;/a&gt; を使うより手軽そうですし。吐いたブツが正しく動くかはまだ試していませんが……。&lt;/p&gt;
-
-&lt;h2 id=&#34;最後に:f374261f8ed11b628682d76f07d866aa&#34;&gt;最後に&lt;/h2&gt;
-
-&lt;p&gt;最初は型システムやマクロ、 derive attribute あたりの面白いところも書こうと思っていたんですが、こればっかり書いていると卒論に全く手がつかないし、
-なによりこれ以上デタラメを書いてると怖い人からマサカリが飛んできそうなので、この辺で筆を置きたいと思います。&lt;/p&gt;
-
-&lt;p&gt;いろいろ書いてきましたが、パターンマッチと代数的データ型と型クラスがあって手続き型が楽に書けて、C++ 似のメモリモデルを持っているというだけでとても面白い言語だと思うので、皆さんも書いてみてください。&lt;/p&gt;
-&lt;div class=&#34;footnotes&#34;&gt;
-
-&lt;hr /&gt;
-
-&lt;ol&gt;
-&lt;li id=&#34;fn:f374261f8ed11b628682d76f07d866aa:Advent-Calender&#34;&gt;ふたつの Advent Calender に同時に投稿するのもアリといわれたので、ちょっとせこいようですが…… &lt;a class=&#34;footnote-return&#34; href=&#34;#fnref:f374261f8ed11b628682d76f07d866aa:Advent-Calender&#34;&gt;&lt;sup&gt;[return]&lt;/sup&gt;&lt;/a&gt;&lt;/li&gt;
-&lt;li id=&#34;fn:f374261f8ed11b628682d76f07d866aa:multirust-https&#34;&gt;あるいは &lt;a href=&#34;https://github.com/brson/multirust&#34;&gt;multirust&lt;/a&gt; を導入するのも手かもしれません &lt;a class=&#34;footnote-return&#34; href=&#34;#fnref:f374261f8ed11b628682d76f07d866aa:multirust-https&#34;&gt;&lt;sup&gt;[return]&lt;/sup&gt;&lt;/a&gt;&lt;/li&gt;
-&lt;li id=&#34;fn:f374261f8ed11b628682d76f07d866aa:Source&#34;&gt;ダウンロードページ右側の Source ボタン &lt;a class=&#34;footnote-return&#34; href=&#34;#fnref:f374261f8ed11b628682d76f07d866aa:Source&#34;&gt;&lt;sup&gt;[return]&lt;/sup&gt;&lt;/a&gt;&lt;/li&gt;
-&lt;li id=&#34;fn:f374261f8ed11b628682d76f07d866aa:Vec&#34;&gt;ここでは、 &lt;code&gt;Vec&lt;/code&gt; などのヒープ領域に置かれたデータ &lt;a class=&#34;footnote-return&#34; href=&#34;#fnref:f374261f8ed11b628682d76f07d866aa:Vec&#34;&gt;&lt;sup&gt;[return]&lt;/sup&gt;&lt;/a&gt;&lt;/li&gt;
-&lt;li id=&#34;fn:f374261f8ed11b628682d76f07d866aa:borrowing&#34;&gt;borrowing があるから、所有権を渡した後でも参照で見るくらいいいじゃないかと思いがちですが、所有と参照だと型が違うので…… &lt;a class=&#34;footnote-return&#34; href=&#34;#fnref:f374261f8ed11b628682d76f07d866aa:borrowing&#34;&gt;&lt;sup&gt;[return]&lt;/sup&gt;&lt;/a&gt;&lt;/li&gt;
-&lt;li id=&#34;fn:f374261f8ed11b628682d76f07d866aa:Copy-trait-C-Jav&#34;&gt;厳密には &lt;code&gt;Copy&lt;/code&gt; trait によって振る舞いが決定されます。この辺は C++ や Java よりも融通が利いていていいと思います &lt;a class=&#34;footnote-return&#34; href=&#34;#fnref:f374261f8ed11b628682d76f07d866aa:Copy-trait-C-Jav&#34;&gt;&lt;sup&gt;[return]&lt;/sup&gt;&lt;/a&gt;&lt;/li&gt;
-&lt;li id=&#34;fn:f374261f8ed11b628682d76f07d866aa:-&#34;&gt;あるリソースの置かれている &lt;strong&gt;場所&lt;/strong&gt; を記憶することで、そのリソースにアクセスする方法 &lt;a class=&#34;footnote-return&#34; href=&#34;#fnref:f374261f8ed11b628682d76f07d866aa:-&#34;&gt;&lt;sup&gt;[return]&lt;/sup&gt;&lt;/a&gt;&lt;/li&gt;
-&lt;li id=&#34;fn:f374261f8ed11b628682d76f07d866aa:-&#34;&gt;参照カウントなどで動的にすることもできます &lt;a class=&#34;footnote-return&#34; href=&#34;#fnref:f374261f8ed11b628682d76f07d866aa:-&#34;&gt;&lt;sup&gt;[return]&lt;/sup&gt;&lt;/a&gt;&lt;/li&gt;
-&lt;li id=&#34;fn:f374261f8ed11b628682d76f07d866aa:region-ML-Kit&#34;&gt;region という考え方で、ML Kit などの言語で寿命をなるべく静的に決定し、実行速度を上げるために使われているそうです &lt;a class=&#34;footnote-return&#34; href=&#34;#fnref:f374261f8ed11b628682d76f07d866aa:region-ML-Kit&#34;&gt;&lt;sup&gt;[return]&lt;/sup&gt;&lt;/a&gt;&lt;/li&gt;
-&lt;li id=&#34;fn:f374261f8ed11b628682d76f07d866aa:new-box&#34;&gt;&lt;code&gt;new&lt;/code&gt; 並みに簡単に書ける、 &lt;code&gt;box&lt;/code&gt; キーワードが検討されてはいるみたいですが…… &lt;a class=&#34;footnote-return&#34; href=&#34;#fnref:f374261f8ed11b628682d76f07d866aa:new-box&#34;&gt;&lt;sup&gt;[return]&lt;/sup&gt;&lt;/a&gt;&lt;/li&gt;
-&lt;li id=&#34;fn:f374261f8ed11b628682d76f07d866aa:-&#34;&gt;ただし未完成な上に更新頻度が低いようですが…… &lt;a class=&#34;footnote-return&#34; href=&#34;#fnref:f374261f8ed11b628682d76f07d866aa:-&#34;&gt;&lt;sup&gt;[return]&lt;/sup&gt;&lt;/a&gt;&lt;/li&gt;
-&lt;li id=&#34;fn:f374261f8ed11b628682d76f07d866aa:Cow-Clone-On-Wri&#34;&gt;ただし &lt;code&gt;Cow&lt;/code&gt; 自体は Clone-On-Write の略らしいです &lt;a class=&#34;footnote-return&#34; href=&#34;#fnref:f374261f8ed11b628682d76f07d866aa:Cow-Clone-On-Wri&#34;&gt;&lt;sup&gt;[return]&lt;/sup&gt;&lt;/a&gt;&lt;/li&gt;
-&lt;li id=&#34;fn:f374261f8ed11b628682d76f07d866aa:GraphViz&#34;&gt;少し前までは GraphViz 用のライブラリすらはいっていたのに…… &lt;a class=&#34;footnote-return&#34; href=&#34;#fnref:f374261f8ed11b628682d76f07d866aa:GraphViz&#34;&gt;&lt;sup&gt;[return]&lt;/sup&gt;&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;/div&gt;
-</description>
+      <description>※この記事は coins Advent Calendar 2015 と AmusementCreators Advent Calendar 2015 の19日目(多分)の記事1です。 大学の後輩たちがやっている Advent Calender に何か書きたいなーと思っていたら、 何となくネタが</description>
     </item>
     
   </channel>

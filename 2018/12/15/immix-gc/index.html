@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="ja-jp">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		
+		<meta name="author" content="ArGxento">
+		
+		<meta name="generator" content="Hugo 0.52" />
+		<title>Scala Native の Immix GC 実装の使い方 &middot; ArGxeLog</title>
+		<link rel="shortcut icon" href="http://blog.agx.pw/images/favicon.ico">
+		<link rel="stylesheet" href="http://blog.agx.pw/css/style.css">
+		<link rel="stylesheet" href="http://blog.agx.pw/css/highlight.css">
+
+		
+		<link rel="stylesheet" href="http://blog.agx.pw/css/monosocialiconsfont.css">
+		
+
+		
+
+		
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+	
+		<a href='http://blog.agx.pw/'> <span class="arrow">←</span>Home</a>
+	
+	<a href='http://blog.agx.pw/posts'>Archive</a>
+	<a href='http://blog.agx.pw/tags'>Tags</a>
+	<a href='http://blog.agx.pw/about'>About</a>
+
+	
+
+	
+</nav>
+
+
+        <section id="wrapper" class="post">
+            <article>
+                <header>
+                    <h1>
+                        Scala Native の Immix GC 実装の使い方
+                    </h1>
+                    <h2 class="headline">
+                    Dec 15, 2018 00:00
+                    · 2463 words
+                    · 5 minute read
+                      <span class="tags">
+                      
+                      
+                          
+                              <a href="http://blog.agx.pw/tags/gc">gc</a>
+                          
+                      
+                      
+                      </span>
+                    </h2>
+                </header>
+                
+                <section id="post-body">
+                    
+
+<p>※この記事は <a href="https://qiita.com/advent-calendar/2018/lang_dev">言語実装 Advent Calendar 2018</a>の15日目の記事です。</p>
+
+<h2 id="はじめに">はじめに</h2>
+
+<p>ブログがあったことすら完全に忘れていました。</p>
+
+<p>Immix<sup class="footnote-ref" id="fnref:http-users-cecs"><a href="#fn:http-users-cecs">1</a></sup>は Blackburn らが提案した高速なガベージコレクション（GC）の手法です。
+<a href="http://www.scala-native.org/">Scala Native</a>ではv0.3.0においてこのImmix GCを実装し、従来のBohem GCに代えて使用できるようになりました。
+また、Scala NativeではImmix GCの実装を言語処理系自身から分離したものを<a href="https://github.com/scala-native/immix">公開</a>しています。</p>
+
+<p>このImmix GC 実装は他の言語処理系からの利用が容易になるよう配慮されている（と個人的に思っている）のですが、どこを探してもまともな資料がありません。そこで本記事では私が調べた、この実装（以降はlibImmixと呼ぶことにします）を自作処理系に組み込むための基本的な知見等について書き残し、供養しておきたいと思います<sup class="footnote-ref" id="fnref:GC"><a href="#fn:GC">2</a></sup>。</p>
+
+<p>ユーザとして使用する分には、Immix GCはマークアンドスウィープGCとほぼ同じように扱える<sup class="footnote-ref" id="fnref:This-paper-descr"><a href="#fn:This-paper-descr">3</a></sup>ため、マークアンドスウィープの概要を頭の片隅に置きながら、以後の文章を読んでいただければと思います。</p>
+
+<p>GitHubの該当<a href="https://github.com/scala-native/immix">リポジトリ</a>から<code>clone</code>し、readmeにあるとおりにビルドしてください<sup class="footnote-ref" id="fnref:libunwind-Arch-L"><a href="#fn:libunwind-Arch-L">4</a></sup>。<code>build/</code>に<code>libImmix.a</code>ができるので、これを使います。</p>
+
+<h2 id="libimmixの使い方">libImmixの使い方</h2>
+
+<h3 id="libimmixと共有するグローバル変数">libImmixと共有するグローバル変数</h3>
+
+<p>libImmixを使用するにあたり、以下の3つのグローバル変数をlibImmix側から見られるようにしておく必要があります。</p>
+
+<pre><code class="language-C">uintptr_t *__modules;
+int __modules_size;
+uintptr_t **__stack_bottom;
+</code></pre>
+
+<p>これらはガベージコレクタが marking を行う際のルートとして使用されます。</p>
+
+<p><code>__modules</code>および<code>__modules_size</code>はstaticな寿命を持つオブジェクト<sup class="footnote-ref" id="fnref:libImmix"><a href="#fn:libImmix">5</a></sup>の配列であり、後述する<code>scalanative_alloc</code>系の関数の返値の配列を設定します。
+また、<code>__stack_bottom</code>はスタックの底へのポインタであり、ガベージコレクタはスタックの先頭からこの変数に設定したアドレスまでをGCの対象とします。</p>
+
+<p>ガベージコレクタはこの2つの領域（<code>__modules</code>を先頭とする要素数<code>__modules_size</code>の配列および、スタックの頭から<code>__stack_bottom</code>まで）を走査し、
+その中に自身が確保したメモリ領域へのポインタを探し出し、オブジェクトをたどる起点とします。</p>
+
+<h3 id="libimmixが提供する関数">libImmixが提供する関数</h3>
+
+<p>libImmixは以下の関数を提供します。</p>
+
+<pre><code class="language-C">extern &quot;C&quot; void scalanative_init();
+extern &quot;C&quot; void *scalanative_alloc(void *info, size_t size, int isObjectArray);
+extern &quot;C&quot; void *scalanative_alloc_small(void *info, size_t size);
+extern &quot;C&quot; void *scalanative_alloc_large(void *info, size_t size);
+extern &quot;C&quot; void scalanative_collect();
+</code></pre>
+
+<p><code>scalanative_init</code>と<code>scalanative_collect</code>はその名の通り、ガベージコレクタの初期化と明示的なオブジェクト回収を行います。
+<code>scalanative_alloc</code>系の関数は、<code>size</code>分のメモリをガベージコレクタが管理する領域から確保します。また、<code>info</code>には後述の<code>Rtti</code>構造体へのポインタを<code>void*</code>にして渡します。</p>
+
+<p><code>alloc</code>系の関数の返値は、以下のような構造体へのポインタにキャストして使うことができます。</p>
+
+<pre><code class="language-C">struct Obj {
+    Rtti* info;
+    uintptr_t body[0];
+};
+</code></pre>
+
+<p>このうち、<code>info</code>には<code>alloc</code>系関数の引数に渡した値がそのままセットされます。また、<code>body</code>が、ユーザが使用できる領域の先頭になります。
+<code>body</code>には<code>alloc</code>系関数の引数<code>size</code>の大きさの領域が確保されます。</p>
+
+<p><code>scalanative_alloc</code>関数では、<code>isObjectArray</code>を<code>true</code>にすると、その領域をオブジェクトの配列と見なし、marking時にその領域すべてを走査するようになります。</p>
+
+<p><code>scalanative_alloc_small</code>と<code>scalanative_alloc_large</code>の使い分けですが、Scala Nativeでは、8192 bytes 以上のオブジェクトに対して<code>large</code>を、それ未満のオブジェクトに対して<code>small</code> を使用しているようです<sup class="footnote-ref" id="fnref:https-github-com"><a href="#fn:https-github-com">6</a></sup><sup class="footnote-ref" id="fnref:https-github-com"><a href="#fn:https-github-com">7</a></sup>。</p>
+
+<h3 id="rtti構造体">Rtti構造体</h3>
+
+<p><code>Rtti</code>構造体はその名の通り、Scalaの実行時型情報（RTTI）を扱う構造体のようです。</p>
+
+<p><code>Rtti</code>構造体は以下のように定義されています（<a href="https://github.com/scala-native/immix/blob/efae385b49f901b681b1f2353b5b20ca0fa93a2c/src/headers/ObjectHeader.h#L30">ObjectHeader.h</a>より）。</p>
+
+<pre><code class="language-C">typedef struct {
+    struct {
+        int32_t id;
+        word_t *name;
+        int8_t kind;
+    } rt;
+    int64_t size;
+    struct {
+        int32_t from;
+        int32_t to;
+    } range;
+    struct {
+        int32_t dyn_method_count;
+        word_t *dyn_method_salt;
+        word_t *dyn_method_keys;
+        word_t *dyn_methods;
+    } dynDispatchTable;
+    int64_t *refMapStruct;
+} Rtti;
+</code></pre>
+
+<p>この内、GCに必要となるのは<code>refMapStruct</code>のみです。実際にlibImmixを自作言語処理系に組み込む場合は、<code>ObjectHeader.h</code>の各種構造体を
+自身の処理系で使っているものと同じになるように書き換えた方が良いかもしれません。</p>
+
+<p><code>refMapStruct</code>は、その型のどこに他のオブジェクトへの参照を持っているかを表す配列です。
+上記<code>Obj</code>構造体の<code>body</code>フィールドのうち、他のオブジェクトのアドレスとなっている要素のインデックスを並べ、最後に番兵として<code>-1</code>を置きます。</p>
+
+<h2 id="その他">その他</h2>
+
+<p><code>Log.h</code>内の<code>#define DEBUG_PRINT</code>を有効にすると、GCが走ったタイミングでどれくらいの領域が開放されたかなどの情報が表示されるようになります。</p>
+
+<hr />
+
+<p>以上が私が調べた範囲でのlibImmixの基本的な使い方です。
+libImmixはScala Licenseで<a href="https://github.com/scala-native/immix/blob/master/LICENSE.md">提供されている</a>ため、ライセンス的に自作言語処理系に組み込みやすく、何よりBoehmGCに比べてかなり高速なのが嬉しいところですね。</p>
+
+<p>慌てて書いたので誤り等多々あるかと思います。お気づきの際は優しくお知らせいただければと思います。</p>
+<div class="footnotes">
+
+<hr />
+
+<ol>
+<li id="fn:http-users-cecs"><a href="http://users.cecs.anu.edu.au/~steveb/pubs/papers/immix-pldi-2008.pdf">http://users.cecs.anu.edu.au/~steveb/pubs/papers/immix-pldi-2008.pdf</a> <a class="footnote-return" href="#fnref:http-users-cecs"><sup>[return]</sup></a></li>
+<li id="fn:GC">私が作成している言語処理系は、GCを組み込む段階まで到達するのがかなり先になりそうなので…… <a class="footnote-return" href="#fnref:GC"><sup>[return]</sup></a></li>
+<li id="fn:This-paper-descr">上記の元論文では、&rdquo;This paper describes a collector family, called mark-region, and introduces opportunistic defragmentation, which mixes copying and marking in a single pass. Combining both, we implement immix,&hellip;&rdquo; らしいですが <a class="footnote-return" href="#fnref:This-paper-descr"><sup>[return]</sup></a></li>
+<li id="fn:libunwind-Arch-L">ビルドにはlibunwindが必要です。また、手元の環境（Arch Linux on WSL, GCC）では、GCTypes.hのインライン展開周りに手を入れないとビルドが通らなかった覚えがあります <a class="footnote-return" href="#fnref:libunwind-Arch-L"><sup>[return]</sup></a></li>
+<li id="fn:libImmix">ここでは、自作言語処理系が生成し、libImmixを使用してメモリ管理を行うオブジェクトを単にオブジェクトと呼ぶことにします。 <a class="footnote-return" href="#fnref:libImmix"><sup>[return]</sup></a></li>
+<li id="fn:https-github-com"><a href="https://github.com/scala-native/scala-native/blob/04525ae624ade17e4e7bc6a8b5695903762f40e4/tools/src/main/scala/scala/scalanative/codegen/Lower.scala#L823">https://github.com/scala-native/scala-native/blob/04525ae624ade17e4e7bc6a8b5695903762f40e4/tools/src/main/scala/scala/scalanative/codegen/Lower.scala#L823</a> <a class="footnote-return" href="#fnref:https-github-com"><sup>[return]</sup></a></li>
+<li id="fn:https-github-com"><a href="https://github.com/scala-native/scala-native/blob/04525ae624ade17e4e7bc6a8b5695903762f40e4/tools/src/main/scala/scala/scalanative/codegen/Lower.scala#L481">https://github.com/scala-native/scala-native/blob/04525ae624ade17e4e7bc6a8b5695903762f40e4/tools/src/main/scala/scala/scalanative/codegen/Lower.scala#L481</a> <a class="footnote-return" href="#fnref:https-github-com"><sup>[return]</sup></a></li>
+</ol>
+</div>
+
+                </section>
+            </article>
+
+            
+
+            
+
+            
+
+            <footer id="footer">
+    
+    <p class="small">
+    
+       © Copyright 2018 <i class="fa fa-heart" aria-hidden="true"></i> ArGxento
+    
+    </p>
+    <p class="small">
+        Powered by <a href="http://www.gohugo.io/">Hugo</a> Theme By <a href="https://github.com/nodejh/hugo-theme-cactus-plus">nodejh</a>
+    </p>
+</footer>
+
+        </section>
+
+        <script src="http://blog.agx.pw/js/jquery-3.3.1.min.js"></script>
+<script src="http://blog.agx.pw/js/main.js"></script>
+<script src="http://blog.agx.pw/js/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+
+
+
+    </body>
+</html>
